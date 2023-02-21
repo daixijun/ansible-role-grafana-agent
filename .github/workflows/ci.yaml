@@ -23,10 +23,10 @@ jobs:
         distro:
           - centos7
           - rockylinux8
-          # - rockylinux9
+          - rockylinux9
           - ubuntu1804
           - ubuntu2004
-          # - ubuntu2204
+          - ubuntu2204
           - debian10
           - debian11
     steps:
