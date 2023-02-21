@@ -100,10 +100,9 @@
     enabled: true
     daemon_reload: true
 
-- name: Check Grafana Agent Service status
+- name: Check Grafana Agent Service status # noqa: command-instead-of-module
   ansible.builtin.command:
     cmd: systemctl is-{{ item }} {{ grafana_agent_systemd_unit_file | basename }}
-    warn: false
   loop:
     - active
     - enabled
