@@ -1,0 +1,51 @@
+---
+name: CI
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+defaults:
+  run:
+    working-directory: daixijun.grafana_agent
+
+jobs:
+  molecule:
+    runs-on: ubuntu-latest
+    env:
+      PY_COLORS: 1 # allows molecule colors to be passed to GitHub Actions
+      ANSIBLE_FORCE_COLOR: 1 # allows ansible colors to be passed to GitHub Actions
+    strategy:
+      matrix:
+        distro:
+          - centos7
+          - rockylinux8
+          - rockylinux9
+          - ubuntu1804
+          - ubuntu2004
+          - ubuntu2204
+          - debian10
+          - debian11
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          path: daixijun.grafana_agent
+
+      - name: Set up Python 3.x
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.x
+          architecture: x64
+          cache: pip
+
+      - name: Install dependencies
+        run: pip3 install ansible-core 'molecule[test,lint]' molecule-plugins[docker] yamllint ansible-lint
+
+      - name: Test with molecule
+        env:
+          MOLECULE_DISTRO: ${{ matrix.distro }}
+        run: molecule test

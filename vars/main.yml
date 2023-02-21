@@ -1,0 +1,4 @@
+---
+grafana_agent_package_name:
+  Debian: grafana-agent-{{ grafana_agent_version }}-1
+  RedHat: grafana-agent={{ grafana_agent_version }}

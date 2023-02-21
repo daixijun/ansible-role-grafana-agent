@@ -1,0 +1,6 @@
+---
+- name: Restart grafana-agent
+  ansible.builtin.systemd:
+    name: "{{ grafana_agent_systemd_unit_file | basename }}"
+    state: restarted
+    daemon_reload: true

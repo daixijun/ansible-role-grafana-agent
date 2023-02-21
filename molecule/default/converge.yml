@@ -1,0 +1,7 @@
+---
+- name: Converge
+  hosts: all
+  tasks:
+    - name: 'Include daixijun.grafana_agent'
+      ansible.builtin.include_role:
+        name: 'daixijun.grafana_agent'

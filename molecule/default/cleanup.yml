@@ -1,0 +1,9 @@
+---
+- name: Cleanup
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Remove binary file
+      ansible.builtin.file:
+        name: files/grafana-agent-linux-amd64.zip
+        state: absent

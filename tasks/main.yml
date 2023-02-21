@@ -1,0 +1,94 @@
+---
+- name: Download grafana-agent binaries
+  ansible.builtin.get_url:
+    url: "{{ grafana_agent_download_url }}"
+    dest: "{{ playbook_dir }}/files/{{ grafana_agent_download_url | basename | trim }}"
+    checksum: "{{ grafana_agent_checksum_algorithm }}:{{ grafana_agent_checksum }}"
+    mode: "0644"
+  delegate_to: localhost
+  become: false
+  run_once: true
+  check_mode: false
+
+- name: Create grafana-agent version directory
+  ansible.builtin.file:
+    path: /usr/local/grafana-agent-{{ grafana_agent_version }}
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Unarchive grafana-agent to target server
+  ansible.builtin.unarchive:
+    src: "{{ playbook_dir }}/files/{{ grafana_agent_download_url | basename | trim }}"
+    dest: /usr/local/grafana-agent-{{ grafana_agent_version }}/
+    creates: /usr/local/grafana-agent-{{ grafana_agent_version }}/grafana-agent-linux-amd64
+    remote_src: false
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Create grafana-agent symlink
+  ansible.builtin.file:
+    src: /usr/local/grafana-agent-{{ grafana_agent_version }}/grafana-agent-linux-amd64
+    dest: /usr/local/bin/grafana-agent
+    state: link
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Create grafana-agent group
+  ansible.builtin.group:
+    name: "{{ grafana_agent_group }}"
+    system: true
+
+- name: Create grafana-agent user
+  ansible.builtin.user:
+    name: "{{ grafana_agent_user }}"
+    group: "{{ grafana_agent_group }}"
+    system: true
+    shell: /sbin/nologin
+    createhome: false
+
+- name: Create grafana-agent config directory
+  ansible.builtin.file:
+    path: "{{ grafana_agent_config_file | dirname }}"
+    state: directory
+    owner: "{{ grafana_agent_user }}"
+    group: "{{ grafana_agent_group }}"
+    mode: "0750"
+
+- name: Create grafana-agent wal directory
+  ansible.builtin.file:
+    path: "{{ grafana_agent_wal_directory }}"
+    state: directory
+    owner: "{{ grafana_agent_user }}"
+    group: "{{ grafana_agent_group }}"
+    mode: "0750"
+
+- name: Create grafana-agent config file
+  ansible.builtin.template:
+    src: grafana-agent.yaml.j2
+    dest: "{{ grafana_agent_config_file }}"
+    owner: "{{ grafana_agent_user }}"
+    group: "{{ grafana_agent_group }}"
+    mode: "0640"
+  notify:
+    - Restart grafana-agent
+
+- name: Create grafana-agent systemd unit file
+  ansible.builtin.template:
+    src: grafana-agent.service.j2
+    dest: "{{ grafana_agent_systemd_unit_file }}"
+    owner: root
+    group: root
+    mode: "0640"
+  notify:
+    - Restart grafana-agent
+
+- name: Enable and start grafana-agent
+  ansible.builtin.systemd:
+    name: "{{ grafana_agent_systemd_unit_file | basename }}"
+    state: started
+    enabled: true
+    daemon_reload: true

@@ -1,0 +1,38 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: false
+  strategy: ansible.builtin.linear
+  tasks:
+    - name: Gather service facts
+      ansible.builtin.service_facts:
+      no_log: true
+
+    - name: Assert that the service state is running
+      ansible.builtin.assert:
+        that:
+          - ansible_facts.services['grafana-agent.service'].state == "running"
+          - ansible_facts.services["grafana-agent.service"].status == "enabled"
+
+    - name: Watting for agent listen port started
+      ansible.builtin.wait_for:
+        host: 127.0.0.1
+        port: 12345
+        state: started
+        timeout: 10
+
+    - name: Get metrics from agent
+      ansible.builtin.uri:
+        url: 'http://127.0.0.1:12345/integrations/agent/metrics'
+        method: GET
+        timeout: 5
+        status_code: 200
+        return_content: false
+
+    - name: Get metrics from node_exporter
+      ansible.builtin.uri:
+        url: 'http://127.0.0.1:12345/integrations/node_exporter/metrics'
+        method: GET
+        timeout: 5
+        status_code: 200
+        return_content: false
