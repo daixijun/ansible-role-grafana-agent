@@ -23,7 +23,6 @@ jobs:
         with:
           python-version: 3.x
           architecture: x64
-          cache: pip
 
       - name: Install Ansible
         run: pip3 install ansible-core
