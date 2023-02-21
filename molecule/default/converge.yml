@@ -5,3 +5,24 @@
     - name: 'Include daixijun.grafana_agent'
       ansible.builtin.include_role:
         name: 'daixijun.grafana_agent'
+      vars:
+        grafana_agent_prometheus_remote_write:
+          - url: http://localhost:9009/api/prom/push
+        grafana_agent_metrics_configs:
+          - name: default
+            scrape_configs:
+              - job_name: agent
+                metrics_path: /integrations/agent/metrics
+                static_configs:
+                  - targets: ['127.0.0.1:12345']
+              - job_name: node_exporter
+                metrics_path: /integrations/node_exporter/metrics
+                static_configs:
+                  - targets: ['127.0.0.1:12345']
+        grafana_agent_integrations:
+          agent:
+            enabled: true
+          node_exporter:
+            enabled: true
+            include_exporter_metrics: true
+            instance: '{{ ansible_hostname }}'

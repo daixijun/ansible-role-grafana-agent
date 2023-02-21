@@ -8,4 +8,25 @@ grafana_agent_config_file: /etc/grafana-agent/config.yaml
 grafana_agent_systemd_unit_file: /etc/systemd/system/grafana-agent.service
 grafana_agent_user: grafana-agent
 grafana_agent_group: grafana-agent
-grafana_agent_server_http_address: 127.0.0.1:12345
+grafana_agent_log_level: info
+
+# https://grafana.com/docs/agent/latest/configuration/flags/
+grafana_agent_extra_args: --disable-reporting
+grafana_agent_scrape_interval: 1m
+
+# https://prometheus.io/docs/prometheus/latest/configuration/configuration/#remote_write
+grafana_agent_prometheus_remote_write: []
+grafana_agent_external_labels: {}
+
+# https://grafana.com/docs/agent/latest/configuration/metrics_config/
+grafana_agent_metrics_configs: []
+
+# https://grafana.com/docs/agent/latest/configuration/integrations/
+grafana_agent_integrations:
+  agent:
+    enabled: true
+  node_exporter:
+    enabled: true
+    include_exporter_metrics: true
+    disable_collectors:
+      - "mdadm"

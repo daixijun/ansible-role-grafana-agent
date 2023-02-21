@@ -2,27 +2,24 @@
 # Sample config for Grafana Agent
 # For a full configuration reference, see: https://grafana.com/docs/agent/latest/configuration/.
 server:
-  log_level: info
+  log_level: {{ grafana_agent_log_level }}
 
 metrics:
   global:
-    scrape_interval: 1m
+    scrape_interval: {{ grafana_agent_scrape_interval }}
+    {% if grafana_agent_external_labels is defined and grafana_agent_external_labels %}
+    external_labels:
+      {{ grafana_agent_external_labels | ansible.builtin.to_nice_yaml(indent=2,sort_keys=false) | indent(6) }}
+    {% endif %}
+    {% if grafana_agent_prometheus_remote_write | length > 0 %}
+    remote_write:
+      {{ grafana_agent_prometheus_remote_write | ansible.builtin.to_nice_yaml(indent=2,sort_keys=false) | indent(6) }}
+    {% endif %}
   wal_directory: '{{ grafana_agent_wal_directory }}'
   configs:
-    # Example Prometheus scrape configuration to scrape the agent itself for metrics.
-    # This is not needed if the agent integration is enabled.
-    # - name: agent
-    #   host_filter: false
-    #   scrape_configs:
-    #     - job_name: agent
-    #       static_configs:
-    #         - targets: ['127.0.0.1:9090']
+    {% if grafana_agent_metrics_configs is defined and grafana_agent_metrics_configs | length > 0 %}
+    {{ grafana_agent_metrics_configs | ansible.builtin.to_nice_yaml(indent=2,sort_keys=false) | indent(4) }}
+    {% endif %}
 
 integrations:
-  agent:
-    enabled: true
-  node_exporter:
-    enabled: true
-    include_exporter_metrics: true
-    disable_collectors:
-      - "mdadm"
+  {{ grafana_agent_integrations | ansible.builtin.to_nice_yaml(indent=2,sort_keys=false) | indent(2) }}

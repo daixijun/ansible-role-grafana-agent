@@ -10,10 +10,7 @@ Restart=always
 User={{ grafana_agent_user }}
 Environment=HOSTNAME=%H
 WorkingDirectory={{ grafana_agent_wal_directory }}
-ExecStart=/usr/local/bin/grafana-agent \
-            --config.file {{ grafana_agent_config_file }} \
-            --disable-reporting \
-            --server.http.address={{ grafana_agent_server_http_address }}
+ExecStart=/usr/local/bin/grafana-agent --config.file {{ grafana_agent_config_file }} {{ grafana_agent_extra_args }}
 ExecReload=/usr/bin/kill -HUP $MAINPID
 # If running the Agent in scraping service mode, you will want to override this value with
 # something larger to allow the Agent to gracefully leave the cluster. 4800s is recommend.
