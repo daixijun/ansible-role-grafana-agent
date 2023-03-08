@@ -19,6 +19,7 @@ jobs:
       PY_COLORS: 1 # allows molecule colors to be passed to GitHub Actions
       ANSIBLE_FORCE_COLOR: 1 # allows ansible colors to be passed to GitHub Actions
     strategy:
+      fail-fast: false
       matrix:
         distro:
           - centos7
@@ -34,6 +35,12 @@ jobs:
         uses: actions/checkout@v3
         with:
           path: daixijun.grafana_agent
+
+      - name: Cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache
+          key: ${{ runner.os }}-cache
 
       - name: Set up Python 3.x
         uses: actions/setup-python@v4
