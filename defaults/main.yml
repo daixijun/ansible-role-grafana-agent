@@ -1,5 +1,5 @@
 ---
-grafana_agent_version: 0.31.3
+grafana_agent_version: 0.32.1
 grafana_agent_download_url: https://github.com/grafana/agent/releases/download/v{{ grafana_agent_version }}/grafana-agent-linux-amd64.zip
 grafana_agent_checksum: https://github.com/grafana/agent/releases/download/v{{ grafana_agent_version }}/SHA256SUMS
 grafana_agent_checksum_algorithm: sha256
