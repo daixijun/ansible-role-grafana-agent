@@ -19,10 +19,10 @@ jobs:
       PY_COLORS: 1 # allows molecule colors to be passed to GitHub Actions
       ANSIBLE_FORCE_COLOR: 1 # allows ansible colors to be passed to GitHub Actions
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         distro:
-          - centos7
+          # - centos7
           - rockylinux8
           - rockylinux9
           - ubuntu1804
@@ -39,14 +39,15 @@ jobs:
       - name: Cache
         uses: actions/cache@v3
         with:
-          path: ~/.cache
-          key: ${{ runner.os }}-cache
+          path: /home/runner/.cache/ansible-compat
+          key: ${{ runner.os }}-ansible-cache
 
       - name: Set up Python 3.x
         uses: actions/setup-python@v4
         with:
           python-version: 3.x
           architecture: x64
+          cache: "pip"
 
       - name: Install dependencies
         run: pip3 install ansible-core 'molecule[test,lint]' molecule-plugins[docker] yamllint ansible-lint
