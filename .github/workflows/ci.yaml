@@ -47,7 +47,6 @@ jobs:
         with:
           python-version: 3.x
           architecture: x64
-          cache: "pip"
 
       - name: Install dependencies
         run: pip3 install ansible-core 'molecule[test,lint]' molecule-plugins[docker] yamllint ansible-lint
